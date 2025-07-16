@@ -21,7 +21,8 @@ pipeline{
         }
         stage("Deploy"){
             steps{
-                deploy()
+                
+                deploy("docker compose","up","--build")
             }
         }
         
