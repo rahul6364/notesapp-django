@@ -1,0 +1,9 @@
+mysql-data
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+.env
+
