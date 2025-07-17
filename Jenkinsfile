@@ -1,30 +1,50 @@
-@Library('Shared')_
+@Library('shared')_
 pipeline{
-    agent { label 'dev-server'}
+    agent { label "agent"}
+    
     
     stages{
-        stage("Code clone"){
+        stage ('code'){
             steps{
-                sh "whoami"
-            clone("https://github.com/LondheShubham153/django-notes-app.git","main")
+                // sh "echo this is code step"
+                // git url: "https://github.com/rahul6364/notesapp-django.git",branch: "main"
+                // sh "echo clonning is completed"
+                script{
+                    clone("https://github.com/rahul6364/notesapp-django.git","main")
+                }
             }
         }
-        stage("Code Build"){
+        stage ('build'){
             steps{
-            dockerbuild("notes-app","latest")
+                // sh "echo this is build step"
+                // sh "docker build -t ${IMAGE_NAME}:latest ."
+                script{
+                    build("notes-app","latest")
+                }
             }
         }
-        stage("Push to DockerHub"){
+        stage ('push to dockerhub'){
             steps{
-                dockerpush("dockerHubCreds","notes-app","latest")
+                // withCredentials([usernamePassword(credentialsId:"dockerhubCred",passwordVariable: "dockerhubPass",usernameVariable:"dockerhubUser")]){
+                // sh "echo pushing the images to dockerhub"
+                // sh "docker login -u ${env. dockerhubUser} -p ${env.dockerhubPass}"
+                // sh "docker image tag notes-app:latest rahul6364/notes-app:latest"
+                // sh "docker push ${env. dockerhubUser}/notes-app:latest"
+                // }
+                script{
+                    docker_push("notes-app","latest")
+                }                
             }
         }
-        stage("Deploy"){
+        stage ('deploy'){
             steps{
-                
-                deploy("docker compose","up","--build")
+                sh "echo this is deploy step"
+                sh "docker compose down ||true "
+                sh "docker compose up --build --remove-orphans -d"
+
             }
         }
         
     }
+    
 }
